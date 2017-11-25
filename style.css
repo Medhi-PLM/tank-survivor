@@ -1,0 +1,62 @@
+html {
+  background: url("images/tank-background.jpg") no-repeat;
+  background-size: cover;
+}
+
+body {
+  padding: 0;
+  text-align: center;
+}
+
+.game-intro {
+  margin-top: 100px;
+  float: left;
+  padding: 0% 10%;
+}
+
+.game-intro p {
+  font-size: 18px;
+  font-family: "Verdana";
+  color: #fff;
+}
+
+.logo-img {
+  width: 350px;
+}
+
+.arrows-img {
+  width: 150px;
+}
+
+.tank {
+  margin-bottom: 50px;
+}
+
+body button {
+  font-size: 30px;
+  background-color: #475534;
+  color: #fff;
+  padding: 20px 40px;
+  border: 0;
+  box-shadow: 0;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.game-board {
+    margin-top: 100px;
+    float: left;
+    padding: 20px 0px;
+}
+
+canvas {
+  border: 2px solid black;
+  background-color: #fff;
+}
+
+.score {
+  width: 300px;
+  height: 150px;
+  background-color: #475534;
+  color: #FFF;
+}
