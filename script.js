@@ -49,8 +49,6 @@ function Tank (x,y,width,color,vx,vy) {
   this.y = y;
   this.width = width;
   this.color = color;
-  this.vx = vx;
-  this.vy = vy;
 }
 
 Tank.prototype.moveLeft = function () {
@@ -62,12 +60,10 @@ Tank.prototype.moveRight = function () {
 };
 
 Tank.prototype.moveTop = function () {
-  console.log(this.y);
   if (this.y > 0) {this.y -= 10;};
 };
 
 Tank.prototype.moveDown = function () {
-  console.log(this.y);
   if (this.y < 310) {this.y += 10;};
 };
 
@@ -89,6 +85,19 @@ Tank.prototype.draw = function () {
   ctx.lineTo(this.gun.xG2, this.gun.yG2);
   ctx.stroke();
 };
+
+function Shootbullet () {
+  $(window).keypress(function(e) {
+    if (e.which === 32) {
+	     console.log('Hi');
+    }
+  });
+}
+
+function DrawBullet () {
+
+}
+
 
 function Bomb (x, y, radius, startAngle, endAngle, anticlockwise, color, stroke) {
   ctx.beginPath();
