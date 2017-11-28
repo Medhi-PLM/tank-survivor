@@ -11,7 +11,8 @@ var opponent;
 function startGame () {
   ctx = document.getElementById('canvas').getContext('2d');
   player = new Tank(30,30,40,'#475534');
-  opponent = new Bomb(450,100,20, 0, Math.PI*2, true, "red", "black");
+  opponent = new Bomb(450,100,20, 0, Math.PI*2, true, 'red', 'black');
+  bullet = new Bullet(350,100,4,"#e57e09");
   setInterval(drawEverything,1000);
 
   document.onkeydown = function(e) {
@@ -41,10 +42,11 @@ function drawEverything () {
   ctx.clearRect(0, 0, 500, 500);
   player.draw();
   opponent.draw();
+  bullet.draw();
 }
 
 
-function Tank (x,y,width,color,vx,vy) {
+function Tank (x,y,width,color) {
   this.x = x;
   this.y = y;
   this.width = width;
@@ -94,8 +96,18 @@ function Shootbullet () {
   });
 }
 
-function DrawBullet () {
+function Bullet (x,y,width,color) {
+  this.x = x;
+  this.y = y;
+  this.width = width;
+  this.color = color;
+}
 
+Bullet.prototype.draw = function () {
+  ctx.beginPath();
+  ctx.fillStyle = this.color;
+  ctx.fillRect(this.x, this.y, this.width, this.width);
+  ctx.moveTo(this.x, this.y);
 }
 
 
@@ -109,7 +121,6 @@ function Bomb (x, y, radius, startAngle, endAngle, anticlockwise, color, stroke)
   this.anticlockwise = true;
   this.color = color;
   this.stroke = stroke;
-
 }
 
 Bomb.prototype.draw = function () {
