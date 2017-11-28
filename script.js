@@ -42,6 +42,7 @@ function startGame () {
 
 function updateEverything () {
   player.update();
+  opponent.update();
   drawEverything();
   /*opponent.update();
   drawEverything();*/
@@ -84,6 +85,13 @@ Tank.prototype.getGun = function () {
     yG1: this.y + this.width/2,
     xG2: this.x + 3*this.width/2,
     yG2: this.y + this.width/2
+  };
+};
+
+Tank.prototype.getCenter = function () {
+  return  {
+    x: this.x + this.width/2,
+    y: this.y + this.width/2,
   };
 };
 
@@ -161,6 +169,12 @@ Bomb.prototype.draw = function () {
 };
 
 Bomb.prototype.update = function () {
-  this.x += player.x;
-  this.y += player.y;
-}
+  // this.x += player.x;
+  // this.y += player.y;
+  var distToTravel = 0.2;
+  var vectorX = player.getCenter().x - this.x;
+  var vectorY = player.getCenter().y - this.y;
+  var vectorLength = Math.sqrt(Math.pow(vectorX,2) + Math.pow(vectorY,2));
+  this.x += distToTravel*vectorX/vectorLength;
+  this.y += distToTravel*vectorY/vectorLength;
+};
