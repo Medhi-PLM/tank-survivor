@@ -1,12 +1,22 @@
 window.onload = function() {
-  document.getElementById("start-button").onclick = function() {
-    startGame();
+  document.getElementById('start-button').onclick = function() {
+  document.querySelector('.game-intro').style.display = 'none';
+  document.querySelector('.game-board').style.display = 'block';
+  document.querySelector('.score').style.display = 'block';
+  startGame();
   };
 };
 
+//Modifier Opponent pour en faire un tableau
+//Différent type d'opponent avec des propriétés et tailles différentes
+
 var ctx;
 var player;
+var listOfOpponent = [];
 var opponent;
+var score = 0;
+var scoreEl = document.querySelector('.beatOpponent');
+var healthPoint = document.querySelector('.saveMyLife');
 
 function startGame () {
   ctx = document.getElementById('canvas').getContext('2d');
@@ -14,7 +24,9 @@ function startGame () {
   opponent = new Bomb(450,100,20, 0, Math.PI*2, true, 'red', 'black');
   setInterval(updateEverything,1);
 
+
   document.onkeydown = function(e) {
+    e.preventDefault();
     switch (e.keyCode) {
       case 37:
         player.moveLeft();
@@ -37,23 +49,49 @@ function startGame () {
         drawEverything();
     }
   };
-
 }
 
 function updateEverything () {
   player.update();
   opponent.update();
+  checkExplosion();
   drawEverything();
-  /*opponent.update();
-  drawEverything();*/
 }
 
 function drawEverything () {
-  ctx.clearRect(0, 0, 500, 500);
+  ctx.clearRect(0, 0, 850, 550);
   player.draw();
   opponent.draw();
 }
 
+//Bullets touch Bomb
+function checkExplosion () {
+  for (var i = player.bullets.length-1; i >=0; i--) {
+    var xBullet = player.bullets[i].x;
+    var yBullet = player.bullets[i].y;
+    var distFromBullet = Math.sqrt(Math.pow(xBullet-opponent.x,2) + Math.pow(yBullet-opponent.y,2));
+    if (distFromBullet < opponent.radius) {
+      var destroy = opponent.hit();
+      player.bullets.splice(i,1);
+      if (destroy) {
+        score++;
+        beatOpponent();
+      }
+    }
+  }
+}
+
+//Opponent shut down
+//Modifier le code pour faire disparaître totalement Bomb
+function beatOpponent () {
+  opponent = new Bomb(0,0,0, 0, Math.PI*2, true, 'red', 'black');
+}
+
+//Opponent touch me
+//Fonctions à développer
+function opponentTouchMe () {
+
+}
 
 function Tank (x,y,width,color) {
   this.x = x;
@@ -64,19 +102,19 @@ function Tank (x,y,width,color) {
 }
 
 Tank.prototype.moveLeft = function () {
-  if (this.x > 0) {this.x -= 10;};
+  if (this.x > 0) {this.x -= 10;}
 };
 
 Tank.prototype.moveRight = function () {
-  if (this.x < 440) {this.x += 10;};
+  if (this.x < 740) {this.x += 10;}
 };
 
 Tank.prototype.moveTop = function () {
-  if (this.y > 0) {this.y -= 10;};
+  if (this.y > 0) {this.y -= 10;}
 };
 
 Tank.prototype.moveDown = function () {
-  if (this.y < 310) {this.y += 10;};
+  if (this.y < 510) {this.y += 10;}
 };
 
 Tank.prototype.getGun = function () {
@@ -145,8 +183,6 @@ Bullet.prototype.update = function () {
   this.y += this.vy;
 };
 
-//vx --> vers le Tank
-//vy --> vers le Tank
 function Bomb (x, y, radius, startAngle, endAngle, anticlockwise, color, stroke) {
   ctx.beginPath();
   this.x = x;
@@ -157,6 +193,7 @@ function Bomb (x, y, radius, startAngle, endAngle, anticlockwise, color, stroke)
   this.anticlockwise = true;
   this.color = color;
   this.stroke = stroke;
+  this.counter = 0;
 }
 
 Bomb.prototype.draw = function () {
@@ -169,12 +206,22 @@ Bomb.prototype.draw = function () {
 };
 
 Bomb.prototype.update = function () {
-  // this.x += player.x;
-  // this.y += player.y;
   var distToTravel = 0.2;
   var vectorX = player.getCenter().x - this.x;
   var vectorY = player.getCenter().y - this.y;
   var vectorLength = Math.sqrt(Math.pow(vectorX,2) + Math.pow(vectorY,2));
   this.x += distToTravel*vectorX/vectorLength;
   this.y += distToTravel*vectorY/vectorLength;
+};
+
+Bomb.prototype.hit = function () {
+  this.counter++;
+  var destroy;
+  if (this.counter >= 3) {
+    destroy = true;
+    return destroy;
+  } else {
+    destroy = false;
+    return destroy;
+  }
 };

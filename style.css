@@ -4,13 +4,15 @@ html {
 }
 
 body {
+  margin: 0;
   padding: 0;
   text-align: center;
 }
 
+/*Beginning screen*/
 .game-intro {
-  margin-top: 100px;
-  float: left;
+  margin: 200px 500px auto;
+  /*float: left;*/
   padding: 0% 10%;
 }
 
@@ -43,8 +45,10 @@ body button {
   margin-bottom: 20px;
 }
 
+/*Second Screen*/
 .game-board {
-    margin-top: 100px;
+    display: none;
+    margin: 50px 50px auto;
     float: left;
     padding: 20px 0px;
 }
@@ -55,8 +59,23 @@ canvas {
 }
 
 .score {
+  display: none;
+  background: url('images/ekg.gif') no-repeat;
+  background-size: cover;
   width: 300px;
+  margin: 70px 50px 0;
+  float: left;
   height: 150px;
-  background-color: #475534;
+  /*background-color: #475534;*/
   color: #FFF;
+}
+
+.score p {
+  text-align: left;
+  margin-left: 15px;
+  font-family: "Verdana";
+}
+
+.score h1 {
+  font-family: "Verdana";
 }
