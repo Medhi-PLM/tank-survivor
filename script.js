@@ -12,16 +12,23 @@ window.onload = function() {
 
 var ctx;
 var player;
-var listOfOpponent = [];
-var opponent;
+var listOfOpponents = [];
+// var opponent;
 var score = 0;
+var increaseScore = 1;
 var scoreEl = document.querySelector('.beatOpponent');
 var healthPoint = document.querySelector('.saveMyLife');
 
 function startGame () {
   ctx = document.getElementById('canvas').getContext('2d');
   player = new Tank(30,30,40,'#475534');
-  opponent = new Bomb(450,100,20, 0, Math.PI*2, true, 'red', 'black');
+  listOfOpponents.push(opponent = new Bomb(450,100,20, 0, Math.PI*2, true, 'red', 'black'));
+  listOfOpponents.push(opponent = new Bomb(450,200,20, 0, Math.PI*2, true, 'red', 'black'));
+  listOfOpponents.push(opponent = new Bomb(450,300,20, 0, Math.PI*2, true, 'red', 'black'));
+  listOfOpponents.push(opponent = new Bomb(450,400,20, 0, Math.PI*2, true, 'red', 'black'));
+  listOfOpponents.push(opponent = new Bomb(450,500,20, 0, Math.PI*2, true, 'red', 'black'));
+  listOfOpponents.push(opponent = new Bomb(450,600,20, 0, Math.PI*2, true, 'red', 'black'));
+  listOfOpponents.push(opponent = new Bomb(450,700,20, 0, Math.PI*2, true, 'red', 'black'));
   setInterval(updateEverything,1);
 
 
@@ -30,52 +37,66 @@ function startGame () {
     switch (e.keyCode) {
       case 37:
         player.moveLeft();
-        drawEverything();
         break;
       case 39:
         player.moveRight();
-        drawEverything();
         break;
       case 38:
         player.moveTop();
-        drawEverything();
         break;
       case 40:
         player.moveDown();
-        drawEverything();
         break;
       case 32:
         player.shoot();
-        drawEverything();
+        break;
+      case 74: // J
+        player.rotateGun(true);
+        break;
     }
+    drawEverything();
   };
 }
 
 function updateEverything () {
   player.update();
-  opponent.update();
+  //Update listOfOpponents
+  //opponent.update();
+  listOfOpponents.forEach(function (element) {
+    element.update();
+  });
   checkExplosion();
   drawEverything();
 }
 
+//Mettre à jour Opponent
 function drawEverything () {
   ctx.clearRect(0, 0, 850, 550);
   player.draw();
-  opponent.draw();
+  //Draw listOfOpponents
+  //opponent.draw();
+  listOfOpponents.forEach(function (element) {
+    element.draw();
+  });
 }
 
 //Bullets touch Bomb
+//Mettre à jour Opponent
 function checkExplosion () {
   for (var i = player.bullets.length-1; i >=0; i--) {
     var xBullet = player.bullets[i].x;
     var yBullet = player.bullets[i].y;
-    var distFromBullet = Math.sqrt(Math.pow(xBullet-opponent.x,2) + Math.pow(yBullet-opponent.y,2));
-    if (distFromBullet < opponent.radius) {
-      var destroy = opponent.hit();
-      player.bullets.splice(i,1);
-      if (destroy) {
-        score++;
-        beatOpponent();
+    for (var iOpponent = 0; iOpponent < listOfOpponents.length; iOpponent++) {
+      var opponent = listOfOpponents[iOpponent];
+      var distFromBullet = Math.sqrt(Math.pow(xBullet-opponent.x,2) + Math.pow(yBullet-opponent.y,2));
+      if (distFromBullet < opponent.radius) {
+        var destroy = opponent.hit();
+        player.bullets.splice(i,1);
+        if (destroy) {
+          scoreEl.innerText = (score+= increaseScore);
+          listOfOpponents.splice(iOpponent,1);
+          // beatOpponent(iOpponent);
+        }
       }
     }
   }
@@ -83,12 +104,19 @@ function checkExplosion () {
 
 //Opponent shut down
 //Modifier le code pour faire disparaître totalement Bomb
-function beatOpponent () {
-  opponent = new Bomb(0,0,0, 0, Math.PI*2, true, 'red', 'black');
-}
+//Supprimer de l'array listOfOpponents
+// function beatOpponent () {
+//   //opponent = new Bomb(0,0,0, 0, Math.PI*2, true, 'red', 'black');
+//   var destroy = opponent.hit();
+//   listOfOpponents.forEach(function (element) {
+//     if (destroy) {listOfOpponents.splice(iOpponent,1);}
+//   });
+// }
 
 //Opponent touch me
 //Fonctions à développer
+//Supprimer de l'array listOfOpponents
+//Player perd des points de vie
 function opponentTouchMe () {
 
 }
@@ -99,6 +127,7 @@ function Tank (x,y,width,color) {
   this.width = width;
   this.color = color;
   this.bullets = [];
+  this.gunAngle = 0; // in radians
 }
 
 Tank.prototype.moveLeft = function () {
@@ -117,12 +146,22 @@ Tank.prototype.moveDown = function () {
   if (this.y < 510) {this.y += 10;}
 };
 
+Tank.prototype.rotateGun = function (isUp) {
+  this.gunAngle += 0.1;
+  // TODO: do the case when isUp = false
+};
+
+
 Tank.prototype.getGun = function () {
+  var xG1 = this.x + this.width/2;
+  var yG1 = this.y + this.width/2;
+  var xG2 = xG1 + this.width * Math.cos(this.gunAngle);
+  var yG2 = yG1 + this.width * Math.sin(this.gunAngle);
   return  {
-    xG1: this.x + this.width/2,
-    yG1: this.y + this.width/2,
-    xG2: this.x + 3*this.width/2,
-    yG2: this.y + this.width/2
+    xG1: xG1,
+    yG1: yG1,
+    xG2: xG2,
+    yG2: yG2
   };
 };
 
@@ -152,7 +191,7 @@ Tank.prototype.draw = function () {
 };
 
 Tank.prototype.shoot = function () {
-  var bullet = new Bullet(this.getGun().xG2,this.getGun().yG2-5/2, 1, 0,  5,"#e57e09");
+  var bullet = new Bullet(this.getGun().xG2,this.getGun().yG2-5/2, Math.cos(this.gunAngle), Math.sin(this.gunAngle),  5,"#e57e09");
   this.bullets.push(bullet);
 };
 
