@@ -29,6 +29,9 @@ function startGame () {
   listOfOpponents.push(opponent = new Bomb(450,500,20, 0, Math.PI*2, true, 'red', 'black'));
   listOfOpponents.push(opponent = new Bomb(450,600,20, 0, Math.PI*2, true, 'red', 'black'));
   listOfOpponents.push(opponent = new Bomb(450,700,20, 0, Math.PI*2, true, 'red', 'black'));
+  listOfOpponents.push(opponent = new Bomb(450,500,20, 0, Math.PI*2, true, 'red', 'black'));
+  listOfOpponents.push(opponent = new Bomb(450,600,20, 0, Math.PI*2, true, 'red', 'black'));
+  listOfOpponents.push(opponent = new Bomb(450,700,20, 0, Math.PI*2, true, 'red', 'black'));
   setInterval(updateEverything,1);
 
 
@@ -52,6 +55,9 @@ function startGame () {
         break;
       case 74: // J
         player.rotateGun(true);
+        break;
+      case 75: // K
+        player.rotateGun(false);
         break;
     }
     drawEverything();
@@ -147,7 +153,8 @@ Tank.prototype.moveDown = function () {
 };
 
 Tank.prototype.rotateGun = function (isUp) {
-  this.gunAngle += 0.1;
+  if (isUp) {this.gunAngle += 0.1;}
+  else {this.gunAngle -= 0.1;}
   // TODO: do the case when isUp = false
 };
 
