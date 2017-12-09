@@ -7,15 +7,12 @@ window.onload = function() {
   };
 };
 
-//Modifier Opponent pour en faire un tableau
-//Différent type d'opponent avec des propriétés et tailles différentes
-
 var ctx;
 var player;
 var listOfOpponents = [];
-// var opponent;
 var score = 0;
 var increaseScore = 1;
+var decreaseScore = 1;
 var scoreEl = document.querySelector('.beatOpponent');
 var healthPoint = document.querySelector('.saveMyLife');
 
@@ -23,17 +20,7 @@ function startGame () {
   ctx = document.getElementById('canvas').getContext('2d');
   player = new Tank(30,30,40,'#475534');
   listOfOpponents.push(opponent = new Bomb(450,100,20, 0, Math.PI*2, true, 'red', 'black'));
-  listOfOpponents.push(opponent = new Bomb(450,200,20, 0, Math.PI*2, true, 'red', 'black'));
-  listOfOpponents.push(opponent = new Bomb(450,300,20, 0, Math.PI*2, true, 'red', 'black'));
-  listOfOpponents.push(opponent = new Bomb(450,400,20, 0, Math.PI*2, true, 'red', 'black'));
-  listOfOpponents.push(opponent = new Bomb(450,500,20, 0, Math.PI*2, true, 'red', 'black'));
-  listOfOpponents.push(opponent = new Bomb(450,600,20, 0, Math.PI*2, true, 'red', 'black'));
-  listOfOpponents.push(opponent = new Bomb(450,700,20, 0, Math.PI*2, true, 'red', 'black'));
-  listOfOpponents.push(opponent = new Bomb(450,500,20, 0, Math.PI*2, true, 'red', 'black'));
-  listOfOpponents.push(opponent = new Bomb(450,600,20, 0, Math.PI*2, true, 'red', 'black'));
-  listOfOpponents.push(opponent = new Bomb(450,700,20, 0, Math.PI*2, true, 'red', 'black'));
   setInterval(updateEverything,1);
-
 
   document.onkeydown = function(e) {
     e.preventDefault();
@@ -50,7 +37,7 @@ function startGame () {
       case 40:
         player.moveDown();
         break;
-      case 32:
+      case 32: // Space bar
         player.shoot();
         break;
       case 74: // J
@@ -66,28 +53,54 @@ function startGame () {
 
 function updateEverything () {
   player.update();
-  //Update listOfOpponents
-  //opponent.update();
   listOfOpponents.forEach(function (element) {
     element.update();
   });
+  // levelManager();
   checkExplosion();
+  opponentTouchMe();
   drawEverything();
 }
 
-//Mettre à jour Opponent
 function drawEverything () {
   ctx.clearRect(0, 0, 850, 550);
   player.draw();
-  //Draw listOfOpponents
-  //opponent.draw();
   listOfOpponents.forEach(function (element) {
     element.draw();
   });
 }
 
-//Bullets touch Bomb
-//Mettre à jour Opponent
+function levelManager () {
+
+  var scoreUpdate = scoreEl.innerText;
+  if (scoreUpdate==='1') {
+    player = new Tank(30,30,40,'#475534');
+    listOfOpponents.push(opponent1 = new Bomb(350,200,30, 0, Math.PI*2, true, 'orange', 'black'));
+    listOfOpponents.push(opponent2 = new Bomb(250,300,40, 0, Math.PI*2, true, 'orange', 'black'));
+    listOfOpponents.push(opponent3 = new Bomb(150,400,50, 0, Math.PI*2, true, 'orange', 'black'));
+    setInterval(updateEverything,1);
+    drawEverything();
+  } else if ('1'<scoreUpdate<='4'&& listOfOpponents.length===0) {
+    player = new Tank(750,30,40,'#475534');
+    listOfOpponents.push(opponent1 = new Bomb(350,200,20, 0, Math.PI*2, true, 'green', 'black'));
+    listOfOpponents.push(opponent2 = new Bomb(250,300,30, 0, Math.PI*2, true, 'green', 'black'));
+    listOfOpponents.push(opponent3 = new Bomb(150,400,30, 0, Math.PI*2, true, 'green', 'black'));
+    listOfOpponents.push(opponent4 = new Bomb(250,500,40, 0, Math.PI*2, true, 'green', 'black'));
+    listOfOpponents.push(opponent5 = new Bomb(150,600,40, 0, Math.PI*2, true, 'green', 'black'));
+    setInterval(updateEverything,1);
+    drawEverything();
+  } else if (scoreUpdate>'4' && listOfOpponents.length===0) {
+    player = new Tank(500,30,40,'#475534');
+    listOfOpponents.push(opponent1 = new Bomb(350,200,20, 0, Math.PI*2, true, 'blue', 'black'));
+    listOfOpponents.push(opponent2 = new Bomb(250,300,30, 0, Math.PI*2, true, 'blue', 'black'));
+    listOfOpponents.push(opponent3 = new Bomb(150,400,30, 0, Math.PI*2, true, 'blue', 'black'));
+    listOfOpponents.push(opponent4 = new Bomb(250,500,40, 0, Math.PI*2, true, 'blue', 'black'));
+    listOfOpponents.push(opponent5   = new Bomb(150,600,40, 0, Math.PI*2, true, 'blue', 'black'));
+    setInterval(updateEverything,1);
+    drawEverything();
+  }
+}
+
 function checkExplosion () {
   for (var i = player.bullets.length-1; i >=0; i--) {
     var xBullet = player.bullets[i].x;
@@ -101,30 +114,26 @@ function checkExplosion () {
         if (destroy) {
           scoreEl.innerText = (score+= increaseScore);
           listOfOpponents.splice(iOpponent,1);
-          // beatOpponent(iOpponent);
+          levelManager();
         }
       }
     }
   }
 }
 
-//Opponent shut down
-//Modifier le code pour faire disparaître totalement Bomb
-//Supprimer de l'array listOfOpponents
-// function beatOpponent () {
-//   //opponent = new Bomb(0,0,0, 0, Math.PI*2, true, 'red', 'black');
-//   var destroy = opponent.hit();
-//   listOfOpponents.forEach(function (element) {
-//     if (destroy) {listOfOpponents.splice(iOpponent,1);}
-//   });
-// }
-
-//Opponent touch me
-//Fonctions à développer
-//Supprimer de l'array listOfOpponents
-//Player perd des points de vie
 function opponentTouchMe () {
-
+  var xPlayer = player.x;
+  var yPlayer = player.y;
+  listOfOpponents.forEach(function (opponent) {
+    var distFromTank = Math.sqrt(Math.pow(opponent.x-xPlayer,2) + Math.pow(opponent.y-yPlayer,2));
+    if (distFromTank < player.width) {
+      var blast = player.beat();
+      listOfOpponents.splice(opponent,1);
+      if (blast) {
+        healthPoint.innerText = (parseInt(healthPoint.innerText -= decreaseScore));
+      } //Change background to "You lose"
+    }
+  });
 }
 
 function Tank (x,y,width,color) {
@@ -133,7 +142,8 @@ function Tank (x,y,width,color) {
   this.width = width;
   this.color = color;
   this.bullets = [];
-  this.gunAngle = 0; // in radians
+  this.gunAngle = 0;
+  this.sum = 0;
 }
 
 Tank.prototype.moveLeft = function () {
@@ -155,9 +165,7 @@ Tank.prototype.moveDown = function () {
 Tank.prototype.rotateGun = function (isUp) {
   if (isUp) {this.gunAngle += 0.1;}
   else {this.gunAngle -= 0.1;}
-  // TODO: do the case when isUp = false
 };
-
 
 Tank.prototype.getGun = function () {
   var xG1 = this.x + this.width/2;
@@ -205,6 +213,18 @@ Tank.prototype.shoot = function () {
 Tank.prototype.update = function () {
     for (var i = 0; i < this.bullets.length; i++) {
     this.bullets[i].update();
+  }
+};
+
+Tank.prototype.beat = function () {
+  this.sum++;
+  var impact;
+  if (this.sum >= 1) {
+    impact = true;
+    return impact;
+  } else {
+    impact = false;
+    return impact;
   }
 };
 
