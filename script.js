@@ -8,7 +8,7 @@ window.onload = function() {
 };
 
 var ctx;
-var player;
+var listOfPlayer = [];
 var listOfOpponents = [];
 var score = 0;
 var increaseScore = 1;
@@ -18,7 +18,7 @@ var healthPoint = document.querySelector('.saveMyLife');
 
 function startGame () {
   ctx = document.getElementById('canvas').getContext('2d');
-  player = new Tank(30,30,40,'#475534');
+  listOfPlayer.push(player = new Tank(30,30,40,'#475534'));
   listOfOpponents.push(opponent = new Bomb(450,100,20, 0, Math.PI*2, true, 'red', 'black'));
   setInterval(updateEverything,1);
 
@@ -26,25 +26,25 @@ function startGame () {
     e.preventDefault();
     switch (e.keyCode) {
       case 37:
-        player.moveLeft();
+        listOfPlayer.forEach(function (element) {element.moveLeft();});
         break;
       case 39:
-        player.moveRight();
+        listOfPlayer.forEach(function (element) {element.moveRight();});
         break;
       case 38:
-        player.moveTop();
+        listOfPlayer.forEach(function (element) {element.moveTop();});
         break;
       case 40:
-        player.moveDown();
+        listOfPlayer.forEach(function (element) {element.moveDown();});
         break;
       case 32: // Space bar
-        player.shoot();
+        listOfPlayer.forEach(function (element) {element.shoot();});
         break;
       case 74: // J
-        player.rotateGun(true);
+        listOfPlayer.forEach(function (element) {element.rotateGun(true);});
         break;
       case 75: // K
-        player.rotateGun(false);
+        listOfPlayer.forEach(function (element) {element.rotateGun(false);});
         break;
     }
     drawEverything();
@@ -52,11 +52,8 @@ function startGame () {
 }
 
 function updateEverything () {
-  player.update();
-  listOfOpponents.forEach(function (element) {
-    element.update();
-  });
-  // levelManager();
+  listOfPlayer.forEach(function (element) {element.update();});
+  listOfOpponents.forEach(function (element) {element.update();});
   checkExplosion();
   opponentTouchMe();
   drawEverything();
@@ -64,24 +61,22 @@ function updateEverything () {
 
 function drawEverything () {
   ctx.clearRect(0, 0, 850, 550);
-  player.draw();
-  listOfOpponents.forEach(function (element) {
-    element.draw();
-  });
+  listOfPlayer.forEach(function (element) {element.draw();});
+  listOfOpponents.forEach(function (element) {element.draw();});
 }
 
 function levelManager () {
 
   var scoreUpdate = scoreEl.innerText;
   if (scoreUpdate==='1') {
-    player = new Tank(30,30,40,'#475534');
+    listOfPlayer[0];
     listOfOpponents.push(opponent1 = new Bomb(350,200,30, 0, Math.PI*2, true, 'orange', 'black'));
     listOfOpponents.push(opponent2 = new Bomb(250,300,40, 0, Math.PI*2, true, 'orange', 'black'));
     listOfOpponents.push(opponent3 = new Bomb(150,400,50, 0, Math.PI*2, true, 'orange', 'black'));
     setInterval(updateEverything,1);
     drawEverything();
-  } else if ('1'<scoreUpdate<='4'&& listOfOpponents.length===0) {
-    player = new Tank(750,30,40,'#475534');
+  } else if (scoreUpdate<='4' && listOfOpponents.length===0) {
+    listOfPlayer[0];
     listOfOpponents.push(opponent1 = new Bomb(350,200,20, 0, Math.PI*2, true, 'green', 'black'));
     listOfOpponents.push(opponent2 = new Bomb(250,300,30, 0, Math.PI*2, true, 'green', 'black'));
     listOfOpponents.push(opponent3 = new Bomb(150,400,30, 0, Math.PI*2, true, 'green', 'black'));
@@ -89,28 +84,28 @@ function levelManager () {
     listOfOpponents.push(opponent5 = new Bomb(150,600,40, 0, Math.PI*2, true, 'green', 'black'));
     setInterval(updateEverything,1);
     drawEverything();
-  } else if (scoreUpdate>'4' && listOfOpponents.length===0) {
-    player = new Tank(500,30,40,'#475534');
-    listOfOpponents.push(opponent1 = new Bomb(350,200,20, 0, Math.PI*2, true, 'blue', 'black'));
+  } else if ('4'<scoreUpdate && listOfOpponents.length===0) {
+    listOfPlayer[0];
+    listOfOpponents.push(opponent1 = new Bomb(350,200,30, 0, Math.PI*2, true, 'blue', 'black'));
     listOfOpponents.push(opponent2 = new Bomb(250,300,30, 0, Math.PI*2, true, 'blue', 'black'));
-    listOfOpponents.push(opponent3 = new Bomb(150,400,30, 0, Math.PI*2, true, 'blue', 'black'));
+    listOfOpponents.push(opponent3 = new Bomb(150,400,40, 0, Math.PI*2, true, 'blue', 'black'));
     listOfOpponents.push(opponent4 = new Bomb(250,500,40, 0, Math.PI*2, true, 'blue', 'black'));
-    listOfOpponents.push(opponent5   = new Bomb(150,600,40, 0, Math.PI*2, true, 'blue', 'black'));
+    listOfOpponents.push(opponent5 = new Bomb(150,600,50, 0, Math.PI*2, true, 'blue', 'black'));
     setInterval(updateEverything,1);
     drawEverything();
-  }
+  } 
 }
 
 function checkExplosion () {
-  for (var i = player.bullets.length-1; i >=0; i--) {
-    var xBullet = player.bullets[i].x;
-    var yBullet = player.bullets[i].y;
+  for (var i = listOfPlayer[0].bullets.length-1; i >=0; i--) {
+    var xBullet = listOfPlayer[0].bullets[i].x;
+    var yBullet = listOfPlayer[0].bullets[i].y;
     for (var iOpponent = 0; iOpponent < listOfOpponents.length; iOpponent++) {
       var opponent = listOfOpponents[iOpponent];
       var distFromBullet = Math.sqrt(Math.pow(xBullet-opponent.x,2) + Math.pow(yBullet-opponent.y,2));
       if (distFromBullet < opponent.radius) {
         var destroy = opponent.hit();
-        player.bullets.splice(i,1);
+        listOfPlayer[0].bullets.splice(i,1);
         if (destroy) {
           scoreEl.innerText = (score+= increaseScore);
           listOfOpponents.splice(iOpponent,1);
@@ -122,16 +117,19 @@ function checkExplosion () {
 }
 
 function opponentTouchMe () {
-  var xPlayer = player.x;
-  var yPlayer = player.y;
+  var xPlayer = listOfPlayer[0].x;
+  var yPlayer = listOfPlayer[0].y;
   listOfOpponents.forEach(function (opponent) {
     var distFromTank = Math.sqrt(Math.pow(opponent.x-xPlayer,2) + Math.pow(opponent.y-yPlayer,2));
-    if (distFromTank < player.width) {
-      var blast = player.beat();
+    if (distFromTank < listOfPlayer[0].width) {
+      var blast = listOfPlayer[0].beat();
       listOfOpponents.splice(opponent,1);
       if (blast) {
         healthPoint.innerText = (parseInt(healthPoint.innerText -= decreaseScore));
-      } //Change background to "You lose"
+        if (parseInt(healthPoint.innerText)===0) {
+          listOfPlayer.pop();
+        }
+      }
     }
   });
 }
@@ -273,8 +271,8 @@ Bomb.prototype.draw = function () {
 
 Bomb.prototype.update = function () {
   var distToTravel = 0.2;
-  var vectorX = player.getCenter().x - this.x;
-  var vectorY = player.getCenter().y - this.y;
+  var vectorX = listOfPlayer[0].getCenter().x - this.x;
+  var vectorY = listOfPlayer[0].getCenter().y - this.y;
   var vectorLength = Math.sqrt(Math.pow(vectorX,2) + Math.pow(vectorY,2));
   this.x += distToTravel*vectorX/vectorLength;
   this.y += distToTravel*vectorY/vectorLength;
